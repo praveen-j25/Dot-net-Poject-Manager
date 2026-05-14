@@ -14,7 +14,33 @@ public class DatabaseSeeder
     public void Initialize()
     {
         using var conn = _dbFactory.CreateConnection();
-        conn.Open();
+        
+        int maxRetries = 12;
+        int currentRetry = 0;
+        bool connected = false;
+
+        while (currentRetry < maxRetries && !connected)
+        {
+            try
+            {
+                Console.WriteLine($"[MIGRATION] Attempting to connect to database... (Attempt {currentRetry + 1}/{maxRetries})");
+                conn.Open();
+                connected = true;
+                Console.WriteLine("[MIGRATION] Successfully connected to database.");
+            }
+            catch (MySqlException ex)
+            {
+                currentRetry++;
+                Console.WriteLine($"[MIGRATION WARNING] Database connection failed: {ex.Message}");
+                if (currentRetry >= maxRetries)
+                {
+                    Console.WriteLine("[MIGRATION ERROR] Could not connect to the database after multiple attempts.");
+                    throw;
+                }
+                Console.WriteLine("[MIGRATION] Waiting 5 seconds before retrying...");
+                System.Threading.Thread.Sleep(5000);
+            }
+        }
 
         // Check if tables exist - if not, create the full schema
         if (!TableExists(conn, "roles"))
