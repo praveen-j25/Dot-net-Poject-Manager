@@ -136,6 +136,15 @@ builder.Services.AddScoped<ManagerService>();
 
 var app = builder.Build();
 
+// Configure Forwarded Headers for Render (Reverse Proxy)
+var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+};
+forwardedHeadersOptions.KnownNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
 // Security Headers Middleware
 app.UseSecurityHeaders();
 
