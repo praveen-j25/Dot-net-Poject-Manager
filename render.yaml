@@ -23,10 +23,7 @@ services:
     branch: main
     dockerContext: ./database
     dockerfilePath: ./Dockerfile
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
+
     envVars:
       - key: MYSQL_ROOT_PASSWORD
         value: ChangeMe123!
