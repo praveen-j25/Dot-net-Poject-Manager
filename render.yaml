@@ -10,8 +10,22 @@ services:
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      - key: ConnectionStrings__DefaultConnection
-        value: "Server=taskmanager-db;Port=3306;Database=task_manager_db;User=root;Password=ChangeMe123!;SslMode=None;AllowPublicKeyRetrieval=true;"
+      - key: DB_HOST
+        fromService:
+          type: pserv
+          name: taskmanager-db
+          property: host
+      - key: DB_PORT
+        fromService:
+          type: pserv
+          name: taskmanager-db
+          property: port
+      - key: DB_USER
+        value: "root"
+      - key: DB_PASSWORD
+        value: "ChangeMe123!"
+      - key: DB_NAME
+        value: "task_manager_db"
       - key: Jwt__SecretKey
         generateValue: true
 
