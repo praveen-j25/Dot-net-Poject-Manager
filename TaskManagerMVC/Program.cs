@@ -25,14 +25,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Support for Render environment variables
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-if (!string.IsNullOrWhiteSpace(dbHost))
+if (string.IsNullOrWhiteSpace(dbHost))
 {
-    var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
-    var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "task_manager_db";
-    var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
-    var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "ChangeMe123!";
-    connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};SslMode=None;AllowPublicKeyRetrieval=true;";
+    dbHost = "taskmanager-db"; // Fallback to Render internal network DNS name
 }
+
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "task_manager_db";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "ChangeMe123!";
+
+connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};SslMode=None;AllowPublicKeyRetrieval=true;";
+Console.WriteLine($"[INIT] Configured to connect to Database at {dbHost}:{dbPort}");
 
 builder.Services.AddSingleton(new DbConnectionFactory(connectionString!));
 builder.Services.AddTransient<DatabaseSeeder>();
