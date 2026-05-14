@@ -43,3 +43,7 @@ services:
         value: ChangeMe123!
       - key: MYSQL_DATABASE
         value: task_manager_db
+      - key: MARIADB_ROOT_PASSWORD
+        value: ChangeMe123!
+      - key: MARIADB_DATABASE
+        value: task_manager_db
