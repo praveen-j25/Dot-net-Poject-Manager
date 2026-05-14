@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: taskmanager_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: task_manager_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Map the database folder to run initialization scripts on first boot
+      - ./database:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskmanager_web
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      # Overrides the appsettings.json DefaultConnection
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=task_manager_db;User=root;Password=root;SslMode=None;AllowPublicKeyRetrieval=true;
+      # Note: In a real production environment, change this secret to something highly secure
+      - Jwt__SecretKey=YourSuperSecretKeyForJWTTokenGeneration123!@#MustBeAtLeast32CharactersLong
+
+volumes:
+  db_data:

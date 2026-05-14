@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: taskmanager-web
+    env: docker
+    region: ohio
+    plan: free
+    branch: main
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        value: "Server=taskmanager-db;Port=3306;Database=task_manager_db;User=root;Password=ChangeMe123!;SslMode=None;AllowPublicKeyRetrieval=true;"
+      - key: Jwt__SecretKey
+        generateValue: true
+
+  - type: pserv
+    name: taskmanager-db
+    env: docker
+    region: ohio
+    plan: free
+    branch: main
+    dockerContext: ./database
+    dockerfilePath: ./Dockerfile
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        value: ChangeMe123!
+      - key: MYSQL_DATABASE
+        value: task_manager_db
