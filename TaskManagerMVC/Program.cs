@@ -130,12 +130,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Run migrations
-using (var scope = app.Services.CreateScope())
+// Run migrations in the background so it doesn't block Kestrel from binding to the port (fixes Render timeout)
+_ = Task.Run(() => 
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    seeder.Initialize();
-}
+    try
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+            seeder.Initialize();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[BACKGROUND ERROR] Seeder failed: {ex.Message}");
+    }
+});
 
 app.UseStaticFiles();
 app.UseRouting();

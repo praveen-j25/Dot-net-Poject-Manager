@@ -15,7 +15,7 @@ public class DatabaseSeeder
     {
         using var conn = _dbFactory.CreateConnection();
         
-        int maxRetries = 12;
+        int maxRetries = 30;
         int currentRetry = 0;
         bool connected = false;
 
