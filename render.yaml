@@ -16,10 +16,7 @@ services:
           name: taskmanager-db
           property: host
       - key: DB_PORT
-        fromService:
-          type: pserv
-          name: taskmanager-db
-          property: port
+        value: "3306"
       - key: DB_USER
         value: "root"
       - key: DB_PASSWORD
