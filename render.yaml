@@ -11,14 +11,39 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: DB_HOST
-        sync: false
+        fromService:
+          type: pserv
+          name: taskmanager-db
+          property: host
       - key: DB_PORT
-        sync: false
+        fromService:
+          type: pserv
+          name: taskmanager-db
+          property: port
       - key: DB_USER
-        sync: false
+        value: "root"
       - key: DB_PASSWORD
-        sync: false
+        value: "ChangeMe123!"
       - key: DB_NAME
-        sync: false
+        value: "task_manager_db"
       - key: Jwt__SecretKey
         generateValue: true
+
+  - type: pserv
+    name: taskmanager-db
+    env: docker
+    region: ohio
+    plan: free
+    branch: main
+    dockerContext: ./database
+    dockerfilePath: ./Dockerfile
+
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        value: ChangeMe123!
+      - key: MYSQL_DATABASE
+        value: task_manager_db
+      - key: MARIADB_ROOT_PASSWORD
+        value: ChangeMe123!
+      - key: MARIADB_DATABASE
+        value: task_manager_db
