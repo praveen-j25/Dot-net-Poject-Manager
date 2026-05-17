@@ -25,7 +25,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 if (string.IsNullOrWhiteSpace(dbHost))
 {
-    dbHost = "taskmanager-db"; // Fallback to Render internal network DNS name
+    dbHost = "localhost"; // Fallback for local development
 }
 
 var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
